@@ -5,6 +5,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Import Aurelio Living Theme */
+@import "themes/aurelio_living/theme.css";
 @tailwind forms;
 
 /*
