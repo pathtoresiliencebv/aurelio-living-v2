@@ -4,18 +4,27 @@
 # Remove unwanted menu items and add custom ones
 
 Rails.application.config.after_initialize do
-  # Remove Vendors menu item from admin
+  # Configure admin menu
   Spree::Backend::Config.configure do |config|
-    # Find and remove the Vendors menu item
+    # Remove Vendors menu item from admin (Enterprise feature)
     config.menu_items.delete_if { |item| item.label == :vendors || item.label == 'Vendors' }
     
-    # You can also add custom menu items here
-    # Example:
-    # config.menu_items << config.class::MenuItem.new(
-    #   label: 'Custom Section',
-    #   icon: 'fa-custom-icon',
-    #   url: '/admin/custom',
-    #   condition: -> { true }
-    # )
+    # Add POS Barcode Scanner to menu
+    config.menu_items << config.class::MenuItem.new(
+      label: 'POS Scanner',
+      icon: 'barcode',
+      url: '/admin/barcode_scanner',
+      match_path: '/barcode_scanner',
+      position: 50
+    )
+    
+    # Add SHEIN Imports to menu
+    config.menu_items << config.class::MenuItem.new(
+      label: 'SHEIN Imports',
+      icon: 'download',
+      url: '/admin/shein_imports',
+      match_path: '/shein_imports',
+      position: 51
+    )
   end
 end
