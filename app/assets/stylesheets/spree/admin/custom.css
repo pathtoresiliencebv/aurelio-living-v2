@@ -1,0 +1,11 @@
+/* Hide upgrade messages */
+.upgrade-notice,
+.community-edition-notice,
+.enterprise-upgrade-notice {
+  display: none !important;
+}
+
+/* Custom Aurelio Living branding */
+.brand-logo::after {
+  content: "Aurelio Living";
+}

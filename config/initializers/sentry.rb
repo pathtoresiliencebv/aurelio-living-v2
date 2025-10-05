@@ -1,4 +1,5 @@
-if defined?(Sentry) && ENV['SENTRY_DSN'].present?
+# Temporarily disabled to fix gem loading issues
+if false && defined?(Sentry) && ENV['SENTRY_DSN'].present?
   Sentry.init do |config|
     config.dsn = ENV['SENTRY_DSN']
     config.breadcrumbs_logger = %i[active_support_logger http_logger]

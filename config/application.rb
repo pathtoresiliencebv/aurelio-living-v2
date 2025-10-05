@@ -33,5 +33,10 @@ module SpreeStarter
 
     # https://github.com/rails/rails/issues/45826
     config.active_record.yaml_column_permitted_classes = [Symbol, BigDecimal, Date, Time, ActiveSupport::TimeWithZone, ActiveSupport::TimeZone, ActiveSupport::HashWithIndifferentAccess]
+    
+    # Set fallback secret key base for development (only if not set)
+    if Rails.env.development? && ENV['SECRET_KEY_BASE'].blank?
+      ENV['SECRET_KEY_BASE'] = 'development_secret_key_base_please_change_in_production'
+    end
   end
 end

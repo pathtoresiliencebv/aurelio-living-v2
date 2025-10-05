@@ -1,7 +1,24 @@
 #!/usr/bin/env bash
-# exit on error
+# Render build script for Spree Commerce
+
 set -o errexit
 
-bundle install --deployment
+echo "🔧 Starting Render build process..."
+
+# Unfreeze bundle to allow updates
+echo "📦 Unfreezing bundle..."
+bundle config set frozen false
+
+# Install dependencies
+echo "📦 Installing dependencies..."
+bundle install
+
+# Precompile assets
+echo "🎨 Precompiling assets..."
 bin/rails assets:precompile
-bin/rails assets:clean
+
+# Run database migrations
+echo "🗄️ Running database migrations..."
+bin/rails db:migrate
+
+echo "✅ Build completed successfully!"

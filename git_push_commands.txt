@@ -1,0 +1,19 @@
+# Git commands to push changes to GitHub
+
+# Navigate to project directory
+cd "/home/jason/AURELIO LIVING/spree_starter"
+
+# Check git status
+git status
+
+# Add all changes
+git add .
+
+# Commit changes
+git commit -m "Fix Gemfile.lock for Render deployment - Remove BUNDLED WITH section"
+
+# Push to GitHub
+git push origin main
+
+# Check if push was successful
+echo "Push completed successfully!"

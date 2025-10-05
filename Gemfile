@@ -41,6 +41,9 @@ gem "tzinfo-data", platforms: %i[ windows jruby ]
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", require: false
 
+# Fix for tsort LoadError in Rails 8.0.0
+gem "tsort", "~> 0.2"
+
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 gem "image_processing", "~> 1.13"
 
@@ -93,9 +96,24 @@ gem 'sidekiq'
 gem "devise"
 
 # Sentry for error/performance monitoring
-gem 'sentry-ruby'
-gem 'sentry-rails'
-gem 'sentry-sidekiq'
+gem 'sentry-ruby', '~> 5.27'
+gem 'sentry-rails', '~> 5.27'
+gem 'sentry-sidekiq', '~> 5.27'
+
+# Fix for net-protocol dependency issues
+gem 'net-protocol', '~> 0.2'
+gem 'net-http', '~> 0.6'
+
+# Fix for core Ruby gems missing in Rails 8.0.0
+gem 'prettyprint', '~> 0.2'
+gem 'pp', '~> 0.6'
+gem 'rexml', '~> 3.4'
+gem 'stringio', '~> 3.1'
+
+# Additional core gems for Rails 8.0.0 compatibility
+gem 'activemerchant', '~> 1.137'
+gem 'actionpack', '~> 8.0'
+gem 'activesupport', '~> 8.0'
 
 # Spree gems
 spree_opts = '~> 5.1'
