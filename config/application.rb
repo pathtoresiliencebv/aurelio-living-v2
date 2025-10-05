@@ -30,6 +30,9 @@ module SpreeStarter
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+    
+    # Load Spree custom themes
+    config.eager_load_paths << Rails.root.join("app/models/spree/themes")
 
     # https://github.com/rails/rails/issues/45826
     config.active_record.yaml_column_permitted_classes = [Symbol, BigDecimal, Date, Time, ActiveSupport::TimeWithZone, ActiveSupport::TimeZone, ActiveSupport::HashWithIndifferentAccess]

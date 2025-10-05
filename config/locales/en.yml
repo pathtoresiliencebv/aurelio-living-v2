@@ -1,31 +1,70 @@
-# Files in the config/locales directory are used for internationalization and
-# are automatically loaded by Rails. If you want to use locales other than
-# English, add the necessary files in this directory.
-#
-# To use the locales, use `I18n.t`:
-#
-#     I18n.t "hello"
-#
-# In views, this is aliased to just `t`:
-#
-#     <%= t("hello") %>
-#
-# To use a different locale, set it with `I18n.locale`:
-#
-#     I18n.locale = :es
-#
-# This would use the information in config/locales/es.yml.
-#
-# To learn more about the API, please read the Rails Internationalization guide
-# at https://guides.rubyonrails.org/i18n.html.
-#
-# Be aware that YAML interprets the following case-insensitive strings as
-# booleans: `true`, `false`, `on`, `off`, `yes`, `no`. Therefore, these strings
-# must be quoted to be interpreted as strings. For example:
-#
-#     en:
-#       "yes": yup
-#       enabled: "ON"
-
 en:
-  hello: "Hello world"
+  spree:
+    # Barcode Scanner Extension
+    barcode_scanner: "Barcode Scanner"
+    barcode: "Barcode"
+    scan_or_enter_barcode: "Scan or enter barcode"
+    lookup: "Lookup"
+    barcode_scanner_instructions: "Use a barcode scanner or manually enter product barcode/SKU to find products quickly"
+    barcode_required: "Barcode is required"
+    barcode_not_found: "Product with barcode '%{barcode}' not found"
+    product_found: "Product found"
+    barcode_lookup_error: "Barcode lookup error"
+    please_enter_barcode: "Please enter a barcode"
+    searching: "Searching"
+    recent_scans: "Recent Scans"
+    generate_barcode: "Generate Barcode"
+    confirm_generate_barcode: "Generate a new barcode for this product?"
+    generating: "Generating"
+    barcode_generated_success: "Barcode generated successfully!"
+    barcode_generation_failed: "Barcode generation failed"
+    barcode_generation_error: "Barcode generation error"
+    enter_barcode_or_generate: "Enter barcode or generate one"
+    barcode_help_text: "EAN-13, UPC, Code128, or custom format"
+    barcode_format_invalid: "Barcode format is invalid"
+    
+    # SHEIN Import Extension
+    shein_product_import: "SHEIN Product Import"
+    new_shein_import: "New SHEIN Import"
+    import_products_from_shein: "Import Products from SHEIN"
+    import_method: "Import Method"
+    search_by_term: "Search by Term"
+    import_from_category_url: "Import from Category URL"
+    search_term: "Search Term"
+    search_term_help: "Enter keywords to search for products on SHEIN (e.g., 'women dresses', 'winter coats')"
+    category_url: "Category URL"
+    category_url_help: "Paste a SHEIN category URL to import all products from that category"
+    max_items_to_import: "Maximum Items to Import"
+    max_items_help: "Limit the number of products to import (1-1000)"
+    apify_api_token: "Apify API Token"
+    leave_blank_to_use_env: "Leave blank to use APIFY_API_TOKEN from environment"
+    apify_token_help: "Get your API token from https://apify.com/account/integrations"
+    auto_publish_products: "Auto-publish Products"
+    auto_publish_help: "Automatically set imported products to 'active' status"
+    shein_import_info: "This will scrape SHEIN products using Apify and import them into your store. The process may take several minutes depending on the number of products."
+    start_import: "Start Import"
+    shein_import_started: "SHEIN import started successfully. Check back in a few minutes."
+    apify_token_required: "Apify API token is required"
+    shein_scrape_started: "SHEIN scraping started"
+    no_imports_yet: "No imports yet. Click 'New Import' to start importing products from SHEIN."
+    products_imported: "Products Imported"
+    import_details: "Import Details"
+    progress: "Progress"
+    started_at: "Started At"
+    scraped_at: "Scraped At"
+    completed_at: "Completed At"
+    apify_run_id: "Apify Run ID"
+    import_completed: "Import Completed"
+    products_failed: "Products Failed"
+    import_failed: "Import Failed"
+    scraping_completed: "Scraping Completed"
+    products_scraped: "Products Scraped"
+    process_import: "Process Import"
+    scraping_in_progress: "Scraping in Progress"
+    please_wait_scraping: "Please wait while we scrape products from SHEIN. This page will auto-refresh."
+    processing_in_progress: "Processing in Progress"
+    please_wait_processing: "Please wait while we import products into your store. This page will auto-refresh."
+    back_to_imports: "Back to Imports"
+    process_now: "Process Now"
+    shein_import_already_processed: "This import has already been processed"
+    shein_import_processing: "Import is now being processed. This may take a few minutes."

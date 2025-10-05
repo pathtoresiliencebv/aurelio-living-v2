@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "active_support/core_ext/integer/time"
 
 Rails.application.configure do
@@ -6,26 +8,51 @@ Rails.application.configure do
   # Code is not reloaded between requests.
   config.enable_reloading = false
 
-  # Eager load code on boot for better performance and memory savings (ignored by Rake tasks).
+  # Eager load code on boot. This eager loads most of Rails and
+  # your application in memory, allowing both threaded web servers
+  # and those relying on copy on write to perform better.
+  # Rake tasks automatically ignore this option for performance.
   config.eager_load = true
 
-  # Full error reports are disabled.
+  # Full error reports are disabled and caching is turned on.
   config.consider_all_requests_local = false
-
-  # Turn on fragment caching in view templates.
   config.action_controller.perform_caching = true
 
-  # Cache assets for far-future expiry since they are all digest stamped.
-  config.public_file_server.headers = { "cache-control" => "public, max-age=#{1.year.to_i}" }
+  # Ensures that a master key has been made available in ENV["RAILS_MASTER_KEY"], config/master.key, or an environment
+  # key such as config/credentials/production.key. This key is used to decrypt credentials (and other encrypted files).
+  # config.require_master_key = true
+
+  # Disable serving static files from `public/`, relying on NGINX/Apache for that.
+  # Enable if using Render or Heroku without a CDN.
+  config.public_file_server.enabled = ENV["RAILS_SERVE_STATIC_FILES"].present?
 
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
   # config.asset_host = "http://assets.example.com"
 
+  # Compress CSS using a preprocessor.
+  # config.assets.css_compressor = :sass
+
+  # Do not fall back to assets pipeline if a precompiled asset is missed.
+  config.assets.compile = false
+
+  # Enable serving of images, stylesheets, and JavaScripts from an asset server.
+  # config.asset_host = "http://assets.example.com"
+
+  # Specifies the header that your server uses for sending files.
+  # config.action_dispatch.x_sendfile_header = "X-Sendfile" # for Apache
+  # config.action_dispatch.x_sendfile_header = "X-Accel-Redirect" # for NGINX
+
   # Store uploaded files on the local file system (see config/storage.yml for options).
   config.active_storage.service = :local
 
+  # Mount Action Cable outside main process or domain.
+  # config.action_cable.mount_path = nil
+  # config.action_cable.url = "wss://example.com/cable"
+  # config.action_cable.allowed_request_origins = [ "http://example.com", /http:\/\/example.*/ ]
+
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.
-  config.assume_ssl = true
+  # Can be used together with config.force_ssl for Strict-Transport-Security and secure cookies.
+  # config.assume_ssl = true
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   config.force_ssl = true
@@ -33,73 +60,65 @@ Rails.application.configure do
   # Skip http-to-https redirect for the default health check endpoint.
   # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
 
-  # Log to STDOUT with the current request id as a default log tag.
-  config.log_tags = [ :request_id ]
-  config.logger   = ActiveSupport::TaggedLogging.logger(STDOUT)
+  # Log to STDOUT by default
+  config.logger = ActiveSupport::Logger.new(STDOUT)
+    .tap  { |logger| logger.formatter = ::Logger::Formatter.new }
+    .then { |logger| ActiveSupport::TaggedLogging.new(logger) }
 
-  # Change to "debug" to log everything (including potentially personally-identifiable information!)
+  # Prepend all log lines with the following tags.
+  config.log_tags = [ :request_id ]
+
+  # "info" includes generic and useful information about system operation, but avoids logging too much
+  # information to avoid inadvertent exposure of personally identifiable information (PII). If you
+  # want to log everything, set the level to "debug".
   config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "info")
 
-  # Prevent health checks from clogging up the logs.
-  config.silence_healthcheck_path = "/up"
-
-  # Don't log any deprecations.
-  config.active_support.report_deprecations = false
-
-  # Replace the default in-process memory cache store with a durable alternative.
-  # https://guides.rubyonrails.org/caching_with_rails.html#activesupport-cache-rediscachestore
-  if ENV['REDIS_CACHE_URL'].present?
-    cache_servers = ENV['REDIS_CACHE_URL'].split(',') # if multiple instances are provided
-    config.cache_store = :redis_cache_store, {
-      url: cache_servers,
-      connect_timeout:    30,  # Defaults to 1 second
-      read_timeout:       0.2, # Defaults to 1 second
-      write_timeout:      0.2, # Defaults to 1 second
-      reconnect_attempts: 2,   # Defaults to 1
+  # Use a different cache store in production.
+  # CRITICAL: Enable Redis caching for Spree performance!
+  config.cache_store = :redis_cache_store, {
+    url: ENV.fetch("REDIS_URL") { "redis://localhost:6379/1" },
+    namespace: "aurelio_living_cache",
+    expires_in: 1.hour,
+    reconnect_attempts: 1,
+    error_handler: -> (method:, returning:, exception:) {
+      Rails.logger.error("Redis error: #{exception.message}")
     }
-  else
-    config.cache_store = :memory_store
-  end
+  }
 
-  # Replace the default in-process and non-durable queuing backend for Active Job.
+  # Use a real queuing backend for Active Job (and separate queues per environment).
   config.active_job.queue_adapter = :sidekiq
+  # config.active_job.queue_name_prefix = "spree_starter_production"
+
+  config.action_mailer.perform_caching = false
 
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
   # config.action_mailer.raise_delivery_errors = false
 
-  # Set host to be used by links generated in mailer templates.
-  # config.action_mailer.default_url_options = { host: "example.com" }
-
-  # Specify outgoing SMTP server. Remember to add smtp/* credentials via rails credentials:edit.
-  if ENV['SENDGRID_API_KEY'].present?
-    config.action_mailer.smtp_settings = {
-      user_name: 'apikey', # This is the string literal 'apikey', NOT the ID of your API key
-      password: ENV['SENDGRID_API_KEY'], # This is the secret sendgrid API key which was issued during API key creation
-      domain: ENV.fetch('SENDGRID_DOMAIN', Rails.application.routes.default_url_options[:host]),
-      address: 'smtp.sendgrid.net',
-      port: 587,
-      authentication: :plain,
-      enable_starttls_auto: true
-    }
-  end
-
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).
   config.i18n.fallbacks = true
 
+  # Don't log any deprecations.
+  config.active_support.report_deprecations = false
+
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
-
-  # Only use :id for inspections in production.
-  config.active_record.attributes_for_inspect = [ :id ]
 
   # Enable DNS rebinding protection and other `Host` header attacks.
   # config.hosts = [
   #   "example.com",     # Allow requests from example.com
   #   /.*\.example\.com/ # Allow requests from subdomains like `www.example.com`
   # ]
-  #
   # Skip DNS rebinding protection for the default health check endpoint.
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+
+  # Performance: Fragment caching for Spree views
+  config.action_controller.perform_caching = true
+  
+  # Performance: Enable query caching
+  config.active_record.query_log_tags_enabled = false
+  
+  # Performance: Disable detailed query logs in production
+  config.active_record.verbose_query_logs = false
 end

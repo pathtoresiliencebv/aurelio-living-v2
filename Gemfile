@@ -29,6 +29,10 @@ gem 'mini_racer', platforms: :ruby
 # Use Redis adapter to run Action Cable in production
 gem "redis", ">= 4.0.1"
 
+# Redis performance optimization
+gem "hiredis", "~> 0.6"
+gem "redis-rack-cache"
+
 # Use Kredis to get higher-level data types in Redis [https://github.com/rails/kredis]
 # gem "kredis"
 
