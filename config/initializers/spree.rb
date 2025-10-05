@@ -75,7 +75,12 @@ Rails.application.config.after_initialize do
 
   # Themes and page builder
   # Register Aurelio Living Custom Theme
-  Rails.application.config.spree.themes << Spree::Themes::AurelioLiving
+  # Load theme class explicitly before registering
+  require_dependency 'spree/themes/aurelio_living' if File.exist?(Rails.root.join('app/models/spree/themes/aurelio_living.rb'))
+  Rails.application.config.spree.themes << Spree::Themes::AurelioLiving if defined?(Spree::Themes::AurelioLiving)
+  
+  # Register Barcode Field in Product Form
+  Rails.application.config.spree_admin.product_form_partials << 'spree/admin/products/barcode_field'
   
   # Rails.application.config.spree.theme_layout_sections << Spree::PageSections::SuperImportantCeoBio
   # Rails.application.config.spree.page_sections << Spree::PageSections::ContactFormToGetInTouch
