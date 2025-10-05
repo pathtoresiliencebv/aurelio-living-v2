@@ -82,6 +82,9 @@ Rails.application.config.after_initialize do
   # Register Barcode Field in Product Form
   Rails.application.config.spree_admin.product_form_partials << 'spree/admin/products/barcode_field'
   
+  # Load custom JavaScript for hiding upgrade notices
+  Rails.application.config.spree_admin.head_partials << 'spree/admin/shared/hide_upgrade_script'
+  
   # Rails.application.config.spree.theme_layout_sections << Spree::PageSections::SuperImportantCeoBio
   # Rails.application.config.spree.page_sections << Spree::PageSections::ContactFormToGetInTouch
   # Rails.application.config.spree.page_blocks << Spree::PageBlocks::BigRedButtonToCallSales

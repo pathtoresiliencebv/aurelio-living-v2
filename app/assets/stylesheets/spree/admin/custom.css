@@ -1,8 +1,34 @@
-/* Hide upgrade messages */
+/* Hide ALL upgrade/enterprise edition messages and popups */
 .upgrade-notice,
 .community-edition-notice,
-.enterprise-upgrade-notice {
+.enterprise-upgrade-notice,
+.upgrade-banner,
+.enterprise-banner,
+.spree-upgrade-notice,
+[data-hook="admin_upgrade_notice"],
+.alert-info:has-text("Enterprise Edition"),
+.alert-info:has-text("upgrade"),
+.alert-info:has-text("Community Edition") {
   display: none !important;
+}
+
+/* Hide the bottom-left upgrade popup specifically */
+.flash.notice:contains("Enterprise"),
+.alert:contains("Enterprise"),
+.alert:contains("upgrade"),
+.notice:contains("Community Edition") {
+  display: none !important;
+}
+
+/* Generic hide for any alert/flash message about upgrades */
+.alert-info,
+.flash-info,
+.notice {
+  &:has-text("upgrade"),
+  &:has-text("Enterprise"),
+  &:has-text("Community Edition") {
+    display: none !important;
+  }
 }
 
 /* Custom Aurelio Living branding */

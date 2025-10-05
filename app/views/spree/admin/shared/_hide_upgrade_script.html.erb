@@ -1,0 +1,77 @@
+<script>
+// Immediately hide upgrade notices - runs before page fully loads
+(function() {
+  'use strict';
+  
+  const hideUpgradeElements = () => {
+    // Patterns to search for
+    const patterns = [
+      'Enterprise Edition',
+      'Community Edition', 
+      'upgrade to',
+      'please upgrade',
+      'get access to all features'
+    ];
+    
+    // Query all potential containers
+    const selectors = [
+      '.alert',
+      '.notice', 
+      '.flash',
+      '.banner',
+      '.upgrade-notice',
+      '[role="alert"]',
+      '.message',
+      'div[class*="upgrade"]',
+      'div[class*="notice"]'
+    ];
+    
+    selectors.forEach(selector => {
+      document.querySelectorAll(selector).forEach(el => {
+        const text = el.textContent || el.innerText || '';
+        
+        if (patterns.some(pattern => text.toLowerCase().includes(pattern.toLowerCase()))) {
+          el.style.display = 'none';
+          el.remove(); // Completely remove from DOM
+        }
+      });
+    });
+  };
+  
+  // Run multiple times to catch all elements
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', hideUpgradeElements);
+  } else {
+    hideUpgradeElements();
+  }
+  
+  setTimeout(hideUpgradeElements, 100);
+  setTimeout(hideUpgradeElements, 500);
+  setTimeout(hideUpgradeElements, 1000);
+  
+  // Observer for dynamically loaded content
+  if (window.MutationObserver) {
+    const observer = new MutationObserver(hideUpgradeElements);
+    observer.observe(document.documentElement, {
+      childList: true,
+      subtree: true
+    });
+  }
+})();
+</script>
+
+<style>
+/* Additional CSS to ensure notices stay hidden */
+.upgrade-notice,
+.community-edition-notice,
+.enterprise-upgrade-notice,
+[data-testid*="upgrade"],
+[class*="upgrade-banner"],
+[class*="enterprise-banner"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+}
+</style>
