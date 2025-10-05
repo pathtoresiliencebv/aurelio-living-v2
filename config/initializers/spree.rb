@@ -88,6 +88,16 @@ Spree.user_class = 'Spree::User'
 # Use a different class for admin users
 Spree.admin_user_class = 'Spree::AdminUser'
 
+# Multi-Store Configuration
+# Enable multi-store setup with subdomain routing
+# Each new store will get a subdomain like: store1.myaurelio.com, store2.myaurelio.com
+# You can change the store code in Admin Panel -> Settings -> Domains
+Spree.root_domain = ENV.fetch('SPREE_ROOT_DOMAIN', 'myaurelio.com')
+
+# For local development, use lvh.me (resolves to 127.0.0.1)
+# Example: store1.lvh.me:3001, store2.lvh.me:3001
+# Spree.root_domain = ENV.fetch('SPREE_ROOT_DOMAIN', 'lvh.me')
+
 Spree.google_places_api_key = ENV['GOOGLE_PLACES_API_KEY'] if ENV['GOOGLE_PLACES_API_KEY'].present?
 Spree.screenshot_api_token = ENV['SCREENSHOT_API_TOKEN'] if ENV['SCREENSHOT_API_TOKEN'].present?
 
