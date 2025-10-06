@@ -312,6 +312,7 @@ GEM
       reline
     hightop (0.6.0)
       activesupport (>= 7.1)
+    hiredis (0.6.3)
     i18n (1.14.7)
       concurrent-ruby (~> 1.0)
     i18n-tasks (1.0.15)
@@ -486,7 +487,7 @@ GEM
     pg (1.6.2-x86_64-linux-musl)
     phonelib (0.10.12)
     popper_js (1.16.1)
-    pp (0.6.2)
+    pp (0.6.3)
       prettyprint
     prettyprint (0.2.0)
     prism (1.5.1)
@@ -511,6 +512,8 @@ GEM
       nio4r (~> 2.0)
     racc (1.8.1)
     rack (3.2.1)
+    rack-cache (1.17.0)
+      rack (>= 0.4)
     rack-session (2.1.1)
       base64 (>= 0.1.0)
       rack (>= 3.0.0)
@@ -571,6 +574,11 @@ GEM
       redis-client (>= 0.22.0)
     redis-client (0.26.1)
       connection_pool
+    redis-rack-cache (2.2.1)
+      rack-cache (>= 1.10, < 2)
+      redis-store (>= 1.6, < 2)
+    redis-store (1.11.0)
+      redis (>= 4, < 6)
     regexp_parser (2.11.3)
     reline (0.6.2)
       io-console (~> 0.5)
@@ -982,6 +990,7 @@ DEPENDENCIES
   devise
   dotenv-rails (~> 3.1)
   foreman
+  hiredis (~> 0.6)
   image_processing (~> 1.13)
   importmap-rails
   jbuilder
@@ -998,6 +1007,7 @@ DEPENDENCIES
   rails (~> 8.0.0)
   rails-controller-testing
   redis (>= 4.0.1)
+  redis-rack-cache
   rexml (~> 3.4)
   rubocop (~> 1.23)
   rubocop-performance
