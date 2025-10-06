@@ -16,9 +16,9 @@ services:
     name: spree-web
     runtime: ruby
     plan: standard
-    buildCommand: bin/render-build.sh
-    preDeployCommand: bin/rails db:migrate && bin/rails db:seed && bin/rake spree_sample:load
-    startCommand: "bin/start_with_sample_data.sh"
+    buildCommand: ./bin/render-build.sh
+    preDeployCommand: bundle exec rails db:migrate && bundle exec rails db:seed && bundle exec rake spree_sample:load
+    startCommand: "bundle exec puma -C config/puma.rb"
     envVars:
       - key: DATABASE_URL
         fromDatabase:
@@ -37,7 +37,7 @@ services:
     name: spree-worker
     runtime: ruby
     plan: standard
-    buildCommand: bin/render-build.sh
+    buildCommand: ./bin/render-build.sh
     startCommand: bundle exec sidekiq
     envVars:
       - key: DATABASE_URL

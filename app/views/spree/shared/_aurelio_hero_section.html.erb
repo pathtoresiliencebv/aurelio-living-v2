@@ -1,0 +1,92 @@
+<%# Aurelio Living Hero Section Component %>
+<section class="hero-section">
+  <div class="container mx-auto px-4">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center min-h-[600px]">
+      <%# Left Column - Content %>
+      <div class="hero-content space-y-6">
+        <%# Badge %>
+        <% if local_assigns[:badge_text].present? %>
+          <%= content_tag(:div, 
+                local_assigns[:badge_text], 
+                class: 'inline-block badge badge-stock px-4 py-2 text-sm font-semibold') %>
+        <% end %>
+
+        <%# Title %>
+        <h1 class="hero-title">
+          <%= local_assigns[:title] || 'Premium Home & Living Products' %>
+        </h1>
+
+        <%# Description %>
+        <p class="hero-description">
+          <%= local_assigns[:description] || 'Transform your workspace with premium solutions designed for productivity and comfort.' %>
+        </p>
+
+        <%# Price Display %>
+        <% if local_assigns[:price].present? %>
+          <div class="flex items-center gap-4">
+            <span class="hero-price">€<%= local_assigns[:price] %></span>
+            <% if local_assigns[:original_price].present? %>
+              <span class="text-xl text-neutral line-through">€<%= local_assigns[:original_price] %></span>
+              <% savings = local_assigns[:original_price].to_f - local_assigns[:price].to_f %>
+              <span class="badge badge-sale px-3 py-1">
+                SAVE €<%= savings.to_i %>
+              </span>
+            <% end %>
+          </div>
+        <% end %>
+
+        <%# CTA Buttons %>
+        <div class="flex flex-col sm:flex-row gap-4">
+          <% if local_assigns[:primary_button_url].present? %>
+            <%= link_to local_assigns[:primary_button_url], 
+                  class: 'btn-primary inline-flex items-center justify-center gap-2' do %>
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                      d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+              </svg>
+              <%= local_assigns[:primary_button_text] || 'ADD TO CART' %>
+            <% end %>
+          <% end %>
+
+          <% if local_assigns[:secondary_button_url].present? %>
+            <%= link_to local_assigns[:secondary_button_text] || 'VIEW DETAILS', 
+                  local_assigns[:secondary_button_url], 
+                  class: 'btn-secondary inline-flex items-center justify-center' %>
+          <% end %>
+        </div>
+      </div>
+
+      <%# Right Column - Image %>
+      <div class="relative">
+        <% if local_assigns[:image_url].present? %>
+          <%= image_tag local_assigns[:image_url], 
+                alt: local_assigns[:image_alt] || 'Hero Image',
+                class: 'w-full h-auto object-cover rounded-lg shadow-2xl' %>
+        <% elsif local_assigns[:product].present? && local_assigns[:product].images.any? %>
+          <%= spree_image_tag(
+                local_assigns[:product].images.first,
+                width: 800,
+                height: 800,
+                loading: :eager,
+                class: 'w-full h-auto object-cover rounded-lg shadow-2xl',
+                alt: local_assigns[:product].name
+              ) %>
+        <% else %>
+          <div class="w-full aspect-square bg-accent rounded-lg flex items-center justify-center">
+            <span class="text-neutral text-lg">Hero Image</span>
+          </div>
+        <% end %>
+
+        <%# Floating Price Badge (Optional) %>
+        <% if local_assigns[:show_price_badge] && local_assigns[:price].present? %>
+          <div class="absolute top-6 right-6 bg-danger text-white rounded-full w-24 h-24 flex items-center justify-center shadow-lg">
+            <div class="text-center">
+              <div class="text-2xl font-bold">€<%= local_assigns[:price] %></div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</section>
+

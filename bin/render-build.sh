@@ -5,20 +5,30 @@ set -o errexit
 
 echo "🔧 Starting Render build process..."
 
-# Unfreeze bundle to allow updates
-echo "📦 Unfreezing bundle..."
-bundle config set frozen false
+# Ensure we're using the correct Ruby version
+if [ -f ".ruby-version" ]; then
+  export RUBY_VERSION=$(cat .ruby-version)
+  echo "📌 Using Ruby version: $RUBY_VERSION"
+fi
+
+# Install bundler if not present
+if ! command -v bundle &> /dev/null; then
+  echo "📦 Installing bundler..."
+  gem install bundler --no-document
+fi
+
+# Configure bundler
+echo "⚙️ Configuring bundler..."
+bundle config set --local deployment false
+bundle config set --local frozen false
+bundle config set --local path vendor/bundle
 
 # Install dependencies
 echo "📦 Installing dependencies..."
-bundle install
+bundle install --jobs=4 --retry=3
 
 # Precompile assets
 echo "🎨 Precompiling assets..."
-bin/rails assets:precompile
-
-# Run database migrations
-echo "🗄️ Running database migrations..."
-bin/rails db:migrate
+RAILS_ENV=production bundle exec rails assets:precompile
 
 echo "✅ Build completed successfully!"

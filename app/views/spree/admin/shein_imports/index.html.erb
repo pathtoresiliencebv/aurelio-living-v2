@@ -1,0 +1,77 @@
+<% page_title Spree.t(:shein_product_import) %>
+
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h3 class="card-title">
+          <i class="fa fa-download"></i>
+          <%= Spree.t(:shein_product_import) %>
+        </h3>
+        <%= link_to Spree.t(:new_import), new_admin_shein_import_path, class: 'btn btn-primary' %>
+      </div>
+      
+      <div class="card-body">
+        <% if @recent_imports.any? %>
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th><%= Spree.t(:id) %></th>
+                <th><%= Spree.t(:search_term) %></th>
+                <th><%= Spree.t(:category_url) %></th>
+                <th><%= Spree.t(:status) %></th>
+                <th><%= Spree.t(:products_imported) %></th>
+                <th><%= Spree.t(:created_at) %></th>
+                <th><%= Spree.t(:actions) %></th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @recent_imports.each do |import| %>
+                <tr>
+                  <td><%= import.id %></td>
+                  <td><%= import.search_term %></td>
+                  <td><%= truncate(import.category_url, length: 50) %></td>
+                  <td>
+                    <span class="badge bg-<%= status_badge_color(import.status) %>">
+                      <%= import.status.humanize %>
+                    </span>
+                  </td>
+                  <td><%= import.products_imported_count %></td>
+                  <td><%= l(import.created_at, format: :short) %></td>
+                  <td>
+                    <%= link_to Spree.t(:view), admin_shein_import_path(import), class: 'btn btn-sm btn-info' %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        <% else %>
+          <div class="alert alert-info">
+            <i class="fa fa-info-circle"></i>
+            <%= Spree.t(:no_imports_yet) %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%= content_for :page_actions do %>
+  <%= link_to Spree.t(:new_import), new_admin_shein_import_path, class: 'btn btn-primary' %>
+<% end %>
+
+<% content_for :head do %>
+  <%= javascript_tag do %>
+    function statusBadgeColor(status) {
+      const colors = {
+        'pending': 'secondary',
+        'scraping': 'info',
+        'scraped': 'primary',
+        'processing': 'warning',
+        'completed': 'success',
+        'failed': 'danger'
+      };
+      return colors[status] || 'secondary';
+    }
+  <% end %>
+<% end %>

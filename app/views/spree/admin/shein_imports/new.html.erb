@@ -1,0 +1,111 @@
+<% page_title Spree.t(:new_shein_import) %>
+
+<div class="row">
+  <div class="col-lg-8 col-md-10 mx-auto">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">
+          <i class="fa fa-download"></i>
+          <%= Spree.t(:import_products_from_shein) %>
+        </h3>
+      </div>
+      
+      <%= form_for [:admin, @shein_import], html: { class: 'card-body' } do |f| %>
+        <% if @shein_import.errors.any? %>
+          <div class="alert alert-danger">
+            <h4><%= pluralize(@shein_import.errors.count, "error") %> prohibited this import:</h4>
+            <ul>
+              <% @shein_import.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+        
+        <div class="mb-4">
+          <h5><%= Spree.t(:import_method) %></h5>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="import_method" id="method_search" value="search" checked>
+            <label class="form-check-label" for="method_search">
+              <%= Spree.t(:search_by_term) %>
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="import_method" id="method_url" value="url">
+            <label class="form-check-label" for="method_url">
+              <%= Spree.t(:import_from_category_url) %>
+            </label>
+          </div>
+        </div>
+        
+        <div class="mb-3" id="search-term-group">
+          <%= f.label :search_term, Spree.t(:search_term), class: 'form-label' %>
+          <%= f.text_field :search_term, class: 'form-control', placeholder: 'e.g., women dresses, winter coats' %>
+          <small class="text-muted"><%= Spree.t(:search_term_help) %></small>
+        </div>
+        
+        <div class="mb-3" id="category-url-group" style="display: none;">
+          <%= f.label :category_url, Spree.t(:category_url), class: 'form-label' %>
+          <%= f.text_field :category_url, class: 'form-control', placeholder: 'https://www.shein.com/category/...' %>
+          <small class="text-muted"><%= Spree.t(:category_url_help) %></small>
+        </div>
+        
+        <div class="mb-3">
+          <%= f.label :max_items, Spree.t(:max_items_to_import), class: 'form-label' %>
+          <%= f.number_field :max_items, class: 'form-control', value: 100, min: 1, max: 1000 %>
+          <small class="text-muted"><%= Spree.t(:max_items_help) %></small>
+        </div>
+        
+        <div class="mb-3">
+          <%= f.label :api_token, Spree.t(:apify_api_token), class: 'form-label' %>
+          <%= f.text_field :api_token, 
+              class: 'form-control', 
+              value: ENV['APIFY_API_TOKEN'],
+              placeholder: Spree.t(:leave_blank_to_use_env) %>
+          <small class="text-muted"><%= Spree.t(:apify_token_help) %></small>
+        </div>
+        
+        <div class="mb-3">
+          <div class="form-check">
+            <%= f.check_box :auto_publish, class: 'form-check-input' %>
+            <%= f.label :auto_publish, Spree.t(:auto_publish_products), class: 'form-check-label' %>
+            <small class="text-muted d-block"><%= Spree.t(:auto_publish_help) %></small>
+          </div>
+        </div>
+        
+        <div class="alert alert-info">
+          <i class="fa fa-info-circle"></i>
+          <%= Spree.t(:shein_import_info) %>
+        </div>
+        
+        <div class="d-flex justify-content-between">
+          <%= link_to Spree.t(:cancel), admin_shein_imports_path, class: 'btn btn-secondary' %>
+          <%= f.submit Spree.t(:start_import), class: 'btn btn-primary' %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<%= javascript_tag do %>
+  document.addEventListener('DOMContentLoaded', function() {
+    const methodSearch = document.getElementById('method_search');
+    const methodUrl = document.getElementById('method_url');
+    const searchTermGroup = document.getElementById('search-term-group');
+    const categoryUrlGroup = document.getElementById('category-url-group');
+    
+    methodSearch.addEventListener('change', function() {
+      if (this.checked) {
+        searchTermGroup.style.display = 'block';
+        categoryUrlGroup.style.display = 'none';
+      }
+    });
+    
+    methodUrl.addEventListener('change', function() {
+      if (this.checked) {
+        searchTermGroup.style.display = 'none';
+        categoryUrlGroup.style.display = 'block';
+      }
+    });
+  });
+<% end %>

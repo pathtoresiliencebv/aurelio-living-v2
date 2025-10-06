@@ -1,0 +1,219 @@
+<%
+
+ page_title Spree.t(:barcode_scanner) %>
+
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">
+          <i class="fa fa-barcode"></i>
+          <%= Spree.t(:barcode_scanner) %>
+        </h3>
+      </div>
+      
+      <div class="card-body">
+        <!-- Barcode Scanner Interface -->
+        <div class="barcode-scanner-container mb-4">
+          <div class="input-group input-group-lg">
+            <span class="input-group-text">
+              <i class="fa fa-barcode"></i>
+            </span>
+            <input 
+              type="text" 
+              id="barcode-input" 
+              class="form-control form-control-lg" 
+              placeholder="<%= Spree.t(:scan_or_enter_barcode) %>" 
+              autofocus
+              autocomplete="off"
+            >
+            <button class="btn btn-primary" id="lookup-button" type="button">
+              <%= Spree.t(:lookup) %>
+            </button>
+          </div>
+          <small class="text-muted">
+            <%= Spree.t(:barcode_scanner_instructions) %>
+          </small>
+        </div>
+        
+        <!-- Scan Result -->
+        <div id="scan-result" class="alert" style="display: none;"></div>
+        
+        <!-- Product Details Card -->
+        <div id="product-details" class="card mb-4" style="display: none;">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-3">
+                <img id="product-image" src="" alt="" class="img-fluid rounded">
+              </div>
+              <div class="col-md-9">
+                <h4 id="product-name"></h4>
+                <p class="text-muted" id="product-sku"></p>
+                <p class="text-muted" id="product-barcode"></p>
+                <h5 class="text-success" id="product-price"></h5>
+                <p id="product-stock"></p>
+                <a id="product-edit-link" href="#" class="btn btn-primary">
+                  <%= Spree.t(:edit_product) %>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Recent Scans -->
+        <div class="card">
+          <div class="card-header">
+            <h5 class="card-title"><%= Spree.t(:recent_scans) %></h5>
+          </div>
+          <div class="card-body">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th><%= Spree.t(:barcode) %></th>
+                  <th><%= Spree.t(:name) %></th>
+                  <th><%= Spree.t(:sku) %></th>
+                  <th><%= Spree.t(:price) %></th>
+                  <th><%= Spree.t(:stock) %></th>
+                  <th><%= Spree.t(:actions) %></th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @recent_scans.each do |product| %>
+                  <tr>
+                    <td><code><%= product.barcode %></code></td>
+                    <td><%= product.name %></td>
+                    <td><%= product.sku %></td>
+                    <td><%= product.display_price %></td>
+                    <td><%= product.total_on_hand %></td>
+                    <td>
+                      <%= link_to Spree.t(:edit), edit_admin_product_path(product), class: 'btn btn-sm btn-primary' %>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%= javascript_tag do %>
+  document.addEventListener('DOMContentLoaded', function() {
+    const barcodeInput = document.getElementById('barcode-input');
+    const lookupButton = document.getElementById('lookup-button');
+    const scanResult = document.getElementById('scan-result');
+    const productDetails = document.getElementById('product-details');
+    
+    function lookupBarcode() {
+      const barcode = barcodeInput.value.trim();
+      
+      if (!barcode) {
+        showError('<%= Spree.t(:please_enter_barcode) %>');
+        return;
+      }
+      
+      // Show loading state
+      lookupButton.disabled = true;
+      lookupButton.innerHTML = '<i class="fa fa-spinner fa-spin"></i> <%= Spree.t(:searching) %>...';
+      
+      fetch('/admin/barcode_scanner/lookup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('[name="csrf-token"]').content
+        },
+        body: JSON.stringify({ barcode: barcode })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          showProduct(data.product);
+          // Play success sound
+          playBeep(true);
+        } else {
+          showError(data.error);
+          // Play error sound
+          playBeep(false);
+        }
+      })
+      .catch(error => {
+        showError('<%= Spree.t(:barcode_lookup_error) %>: ' + error.message);
+        playBeep(false);
+      })
+      .finally(() => {
+        lookupButton.disabled = false;
+        lookupButton.innerHTML = '<%= Spree.t(:lookup) %>';
+        barcodeInput.value = '';
+        barcodeInput.focus();
+      });
+    }
+    
+    function showProduct(product) {
+      scanResult.style.display = 'block';
+      scanResult.className = 'alert alert-success';
+      scanResult.innerHTML = '<i class="fa fa-check-circle"></i> <%= Spree.t(:product_found) %>!';
+      
+      productDetails.style.display = 'block';
+      document.getElementById('product-name').textContent = product.name;
+      document.getElementById('product-sku').textContent = '<%= Spree.t(:sku) %>: ' + product.sku;
+      document.getElementById('product-barcode').textContent = '<%= Spree.t(:barcode) %>: ' + product.barcode;
+      document.getElementById('product-price').textContent = product.price;
+      document.getElementById('product-stock').textContent = '<%= Spree.t(:stock) %>: ' + product.stock;
+      document.getElementById('product-edit-link').href = product.url;
+      
+      if (product.image_url) {
+        document.getElementById('product-image').src = product.image_url;
+      }
+      
+      // Auto-hide success message after 3 seconds
+      setTimeout(() => {
+        scanResult.style.display = 'none';
+      }, 3000);
+    }
+    
+    function showError(message) {
+      scanResult.style.display = 'block';
+      scanResult.className = 'alert alert-danger';
+      scanResult.innerHTML = '<i class="fa fa-exclamation-circle"></i> ' + message;
+      productDetails.style.display = 'none';
+      
+      // Auto-hide error after 5 seconds
+      setTimeout(() => {
+        scanResult.style.display = 'none';
+      }, 5000);
+    }
+    
+    function playBeep(success) {
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      oscillator.frequency.value = success ? 800 : 400;
+      oscillator.type = 'sine';
+      
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+      
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.1);
+    }
+    
+    // Event listeners
+    lookupButton.addEventListener('click', lookupBarcode);
+    
+    barcodeInput.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        lookupBarcode();
+      }
+    });
+    
+    // Auto-focus on input
+    barcodeInput.focus();
+  });
+<% end %>

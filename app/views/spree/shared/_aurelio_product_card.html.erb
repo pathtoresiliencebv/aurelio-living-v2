@@ -1,0 +1,78 @@
+<%# Aurelio Living Product Card Component %>
+<div class="product-card group relative">
+  <%# Product Badges %>
+  <div class="absolute top-3 left-3 z-10 flex flex-col gap-2">
+    <% if product.on_sale? %>
+      <%= aurelio_badge(:sale, 'Sale') %>
+    <% end %>
+    <% if product.available_on && product.available_on > 30.days.ago %>
+      <%= aurelio_badge(:new, 'New') %>
+    <% end %>
+  </div>
+
+  <%# Product Image with Hover Effect %>
+  <%= link_to product_path(product), class: 'product-card-image block' do %>
+    <% if product.images.any? %>
+      <%= spree_image_tag(
+        product.images.first,
+        width: theme_preference(:product_listing_image_width) || 300,
+        height: theme_preference(:product_listing_image_height) || 300,
+        loading: :lazy,
+        class: 'w-full h-full object-cover transition-all duration-500 group-hover:opacity-90',
+        alt: product.name
+      ) %>
+    <% else %>
+      <div class="w-full h-full bg-accent flex items-center justify-center">
+        <span class="text-neutral">No image</span>
+      </div>
+    <% end %>
+  <% end %>
+
+  <%# Product Info %>
+  <div class="p-4">
+    <%# Category %>
+    <% if product.taxons.any? %>
+      <p class="product-card-category text-sm uppercase tracking-wide mb-2">
+        <%= product.taxons.first.name %>
+      </p>
+    <% end %>
+
+    <%# Product Title %>
+    <%= link_to product_path(product), class: 'block' do %>
+      <h3 class="product-card-title text-lg font-semibold mb-2 hover:text-danger transition-colors">
+        <%= product.name %>
+      </h3>
+    <% end %>
+
+    <%# Price %>
+    <div class="mb-4">
+      <% if product.compare_at_price.present? && product.compare_at_price > product.price %>
+        <%= aurelio_price_display(product.price, product.compare_at_price) %>
+      <% else %>
+        <span class="product-card-price text-xl font-bold">
+          <%= display_price(product.price) %>
+        </span>
+      <% end %>
+    </div>
+
+    <%# Add to Cart Button %>
+    <% if product.purchasable? %>
+      <%= form_with url: cart_populate_path, method: :post, local: true, class: 'w-full' do |f| %>
+        <%= hidden_field_tag :variant_id, product.master.id %>
+        <%= hidden_field_tag :quantity, 1 %>
+        <%= button_tag type: 'submit', class: 'btn-primary w-full uppercase text-sm py-3' do %>
+          <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                  d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+          </svg>
+          <%= Spree.t('add_to_cart') %>
+        <% end %>
+      <% end %>
+    <% else %>
+      <button disabled class="btn-secondary w-full uppercase text-sm py-3 opacity-50 cursor-not-allowed">
+        <%= Spree.t('out_of_stock') %>
+      </button>
+    <% end %>
+  </div>
+</div>
+
