@@ -14,9 +14,10 @@ module Spree
     validates :category_url, presence: true, if: -> { search_term.blank? }
     validates :max_items, numericality: { greater_than: 0, less_than_or_equal_to: 1000 }
     
-    serialize :scraped_data, JSON
-    serialize :import_results, JSON
-    serialize :errors, JSON
+    # Rails 8 compatibility: use coder: instead of positional argument
+    serialize :scraped_data, coder: JSON
+    serialize :import_results, coder: JSON
+    serialize :errors, coder: JSON
     
     scope :pending, -> { where(status: 'pending') }
     scope :completed, -> { where(status: 'completed') }
