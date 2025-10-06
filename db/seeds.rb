@@ -9,3 +9,16 @@
 #   end
 
 Spree::Core::Engine.load_seed if defined?(Spree::Core)
+
+# Setup default admin user for Aurelio Living
+puts "🔧 Setting up Aurelio Living admin user..."
+admin = Spree::AdminUser.find_or_initialize_by(email: 'admin@aurelioliving.com')
+
+if admin.new_record?
+  admin.password = 'Admin123!'
+  admin.password_confirmation = 'Admin123!'
+  admin.save!
+  puts "✅ Admin user created: admin@aurelioliving.com"
+else
+  puts "✅ Admin user already exists: admin@aurelioliving.com"
+end
