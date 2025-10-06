@@ -12,16 +12,6 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   # root "posts#index"
 
-  # Devise Authentication for Admin Users
-  devise_for :admin_users, class_name: 'Spree::AdminUser', 
-             controllers: { sessions: 'devise/sessions' },
-             path_names: { sign_in: 'login', sign_out: 'logout' }
-  
-  # Devise Authentication for Storefront Users
-  devise_for :users, class_name: 'Spree::User',
-             controllers: { sessions: 'devise/sessions' },
-             path_names: { sign_in: 'login', sign_out: 'logout' }
-
   # This line mounts Spree's routes at the root of your application.
   # This means, any requests to URLs such as /products, will go to
   # Spree::ProductsController.
